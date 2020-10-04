@@ -1,5 +1,6 @@
 ﻿using GradeBook.GradeBooks;
 using System;
+using GradeBook.Enums;
 
 namespace GradeBook.UserInterfaces
 {
@@ -34,13 +35,28 @@ namespace GradeBook.UserInterfaces
         public static void CreateCommand(string command)
         {
             var parts = command.Split(' ');
-            if (parts.Length != 2)
+            if (parts.Length != 3)
             {
-                Console.WriteLine("Command not valid, Create requires a name.");
+                Console.WriteLine("Command not valid, Create requires a name and type of gradebook.");
                 return;
             }
             var name = parts[1];
-            BaseGradeBook gradeBook = new BaseGradeBook(name);
+            var gradeBookType = parts[2];
+
+            BaseGradeBook gradeBook;
+
+            if(gradeBookType == "standard")
+                gradeBook = new StandardGradeBook(name);
+            else if (gradeBookType == "ranked")
+                gradeBook = new RankedGradeBook(name);
+            else
+            {
+                Console.WriteLine(gradeBookType + " is not a supported type of gradebook, please try again");
+                return;
+            }
+
+            //var gradeBook = CreateGradeBook(gradeBookType, name);
+
             Console.WriteLine("Created gradebook {0}.", name);
             GradeBookUserInterface.CommandLoop(gradeBook);
         }
@@ -74,6 +90,16 @@ namespace GradeBook.UserInterfaces
             Console.WriteLine("Help - Displays all accepted commands.");
             Console.WriteLine();
             Console.WriteLine("Quit - Exits the application");
+        }
+
+        private static BaseGradeBook CreateGradeBook(string type, string name)
+        {
+            if(type == "standard")
+                return new StandardGradeBook(name);
+            if (type == "ranked")
+                return new RankedGradeBook(name);
+
+            return null;
         }
     }
 }
